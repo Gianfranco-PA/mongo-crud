@@ -9,4 +9,4 @@ const Usuario = models.Usuario || model('Usuario', UsuarioSchema)
 
 export default Usuario
 
-export type User = InferSchemaType<typeof Usuario>
+export type User = InferSchemaType<typeof UsuarioSchema>

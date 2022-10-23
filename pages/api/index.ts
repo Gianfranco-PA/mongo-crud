@@ -1,41 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import Usuario, { User } from '../../src/api/UsuarioModel'
-import { dbConnect } from '../../src/api/mongo'
-import mongoose from 'mongoose'
+import { getRequest, postRequest } from '../../src/controlador/transacciones'
 
-dbConnect()
+//dbConnect()
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<User>,
+  res: NextApiResponse<any>,
 ) {
   const { method, body } = req
   switch (method) {
     case 'GET':
-      try {
-        const all = await Usuario.find()
-        return res.status(200).json(all)
-
-        //return res.status(200).json({ msg: 'Hola' })
-      } catch (error) {
-        const msg = (error as Error).message
-        return res.status(500).json({ msg })
-      }
+      const getR = await getRequest()
+      const resultGet = 'data' in getR ? getR.data : getR.msg
+      return res.status(getR.status).json(resultGet)
     case 'POST':
-      const session = await mongoose.startSession()
-      try {
-        session.startTransaction()
-        const newData = new Usuario(body)
-
-        //newData.id = new Types.ObjectId()
-        const savedData = await newData.save({ session })
-        await session.commitTransaction()
-        return res.status(201).json(savedData)
-      } catch (error) {
-        const msg = (error as Error).message
-        await session.abortTransaction()
-        return res.status(500).json({ msg })
-      }
+      const postR = await postRequest(body)
+      const resultPost = 'data' in postR ? postR.data : postR.msg
+      return res.status(postR.status).json(resultPost)
     default:
       return res.status(400).json({ msg: 'Este metodo no esta implementado' })
   }

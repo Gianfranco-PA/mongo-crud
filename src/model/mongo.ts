@@ -1,4 +1,4 @@
-import { connect, connection, createConnection } from 'mongoose'
+import { connect, connection} from 'mongoose'
 
 const conn = {
   isConnected: 0,
